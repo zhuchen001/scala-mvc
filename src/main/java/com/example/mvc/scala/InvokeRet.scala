@@ -6,9 +6,9 @@ package com.example.mvc.scala
  * @param ret
  * @tparam T
  */
-class InvokeRet[T](var error: Throwable, var result: T) {
+class InvokeRet[T](var err: Throwable, var ret: T) {
     def isException() : Boolean = {
-      error != null
+      err != null
     }
 
   def isSuccess() : Boolean = {

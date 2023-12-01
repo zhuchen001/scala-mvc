@@ -46,9 +46,9 @@ class ProductServiceImpl extends ProductService {
     val ret = RichObject.invoke(() => excep(domain))
 
     if (ret.isException) {
-      logger.error("execute error", ret.error)
+      logger.error("execute error", ret.err)
     } else {
-      logger.info("execute ret:{}", ret.result)
+      logger.info("execute ret:{}", ret.ret)
     }
 
     domain.sendMQ("testtopic")
