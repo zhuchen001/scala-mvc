@@ -2,7 +2,7 @@ package com.example.mvc.service.impl
 
 import com.example.mvc.dao.{ProductMapper, SubMapper}
 import com.example.mvc.domain.{ProductBean, SubBean}
-import com.example.mvc.scala.RichObject
+import com.example.mvc.scala.RichObject._
 import com.example.mvc.scala.RichPO._
 import com.example.mvc.service.ProductService
 import com.example.mvc.utils.QueryWrapperBuild
@@ -43,12 +43,18 @@ class ProductServiceImpl extends ProductService {
     // 走内部切面 test d sd hello
     AopContext.currentProxy().asInstanceOf[ProductServiceImpl].saveProductInner(domain)
 
-    val ret = RichObject.invoke(() => excep(domain))
+    val ret = ?(() => excep(domain))
 
-    if (ret.isException) {
+    if (ret.isError) {
       logger.error("execute error", ret.err)
     } else {
-      logger.info("execute ret:{}", ret.ret)
+      logger.info("execute ret:{}", ret.result)
+    }
+
+    val err = ??(() => excep(domain))
+
+    if (err != null) {
+
     }
 
     domain.sendMQ("testtopic")
