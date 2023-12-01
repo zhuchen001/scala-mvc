@@ -1,0 +1,30 @@
+server:
+  port: 8080
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver  #定义配置驱动类
+    username: ecmp_stand #mysql登录用户名
+    password: China$OA_Uportal2012! #mysql登录密码
+    url: jdbc:mysql://localhost:13306/ecmp_stand?characterEncoding=utf8&allowMultiQueries=true
+    type: com.alibaba.druid.pool.DruidDataSource #配置连接池
+    druid:
+      one:
+        max-active: 100 #最大连接数
+        min-idle: 20 #最小连接数
+        max-wait: 2000 #超时时间（ms）
+  kafka:
+    bootstrap-servers: 192.168.1.178:9092
+    producer:
+      acks: 1
+      batch-size: 16384
+      buffer-memory: 33554432
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      retries: 0
+
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #配置日志
+  type-aliases-package: com.example.mvc.domain #实体类所在包，允许用实体类类名作为别名
+  mapper-locations: classpath:*/*Mapper.xml #链接 mapper文件
