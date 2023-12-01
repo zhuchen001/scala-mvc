@@ -30,6 +30,10 @@ object App {
 
     println(domain.toJson)
 
+    val dd1 = null.asInstanceOf[String]
+
+    println(dd1)
+
   }
 
 }
