@@ -34,6 +34,13 @@ object App {
 
     println(dd1)
 
+    f7(println(_))
+
+
+  }
+
+  def f7(f: (Int) => Unit) = {
+    f(1)
   }
 
 }

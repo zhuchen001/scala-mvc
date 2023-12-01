@@ -8,8 +8,10 @@ object RichObject {
    * 生成json
    *
    */
-  implicit class ObjectExtensions(obj: Any) {
+  implicit class ObjectExtensions[T](obj: T) {
     def toJson: String = JSONTools.toJson(obj)
+
+    def ? : Option[T] = if (obj == null) None else Some(obj)
   }
 
 
@@ -36,17 +38,21 @@ object RichObject {
    * @param f 实际执行函数
    * @tparam T 核心返回值
    */
-  def ?[T](f: () => T): InvokeRet[T] = {
+  def >[T](f: () => T): InvokeRet[T] = {
     invoke(f)
   }
 
   /**
-   * 执行函数且获取执行异常，如果没有异常返回null
+   * 执行函数，如果异常返回true
+   *
    * @param f
    * @tparam T
    * @return
    */
-  def ??[T](f: () => T): Throwable = {
-    ?(f).err
+  def >>[T](f: () => T): Boolean = {
+    val ret = >(f)
+    // 默认打印日志
+    if (ret.isError()) POUtils.warn("invoke function exception", ret.err)
+    ret.isError()
   }
 }

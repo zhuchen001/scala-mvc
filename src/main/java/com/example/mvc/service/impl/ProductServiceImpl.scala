@@ -40,21 +40,14 @@ class ProductServiceImpl extends ProductService {
 
     logger.info("save product:{}", domain)
 
+    (domain?).isEmpty
+
     // 走内部切面 test d sd hello
     AopContext.currentProxy().asInstanceOf[ProductServiceImpl].saveProductInner(domain)
 
-    val ret = ?(() => excep(domain))
-
-    if (ret.isError) {
-      logger.error("execute error", ret.err)
-    } else {
-      logger.info("execute ret:{}", ret.result)
-    }
-
-    val err = ??(() => excep(domain))
-
-    if (err != null) {
-
+    // 如果执行异常
+    if (>>(() => excep(domain))) {
+      // TODO ·比如短路返回一些信息
     }
 
     domain.sendMQ("testtopic")
