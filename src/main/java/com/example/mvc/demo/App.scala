@@ -36,7 +36,14 @@ object App {
 
     f7(println(_))
 
+    println((xx?).isEmpty)
 
+
+  }
+
+
+  def xx : String = {
+    null
   }
 
   def f7(f: (Int) => Unit) = {

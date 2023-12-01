@@ -38,9 +38,8 @@ class ProductServiceImpl extends ProductService {
   override def saveProduct(domain: ProductBean): Boolean = {
     require(domain != null, "domain must not null")
 
-    logger.info("save product:{}", domain)
+    logger.info("save product:{}, is not null:{}", domain,  (domain?).isDefined)
 
-    (domain?).isEmpty
 
     // 走内部切面 test d sd hello
     AopContext.currentProxy().asInstanceOf[ProductServiceImpl].saveProductInner(domain)
