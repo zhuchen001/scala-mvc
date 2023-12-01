@@ -46,7 +46,7 @@ class ProductServiceImpl extends ProductService {
     AopContext.currentProxy().asInstanceOf[ProductServiceImpl].saveProductInner(domain)
 
     // 如果执行异常
-    if (>>(() => excep(domain))) {
+    if (>>>(() => excep(domain))) {
       // TODO ·比如短路返回一些信息
     }
 

@@ -38,7 +38,7 @@ object RichObject {
    * @param f 实际执行函数
    * @tparam T 核心返回值
    */
-  def >[T](f: () => T): InvokeRet[T] = {
+  def >>[T](f: () => T): InvokeRet[T] = {
     invoke(f)
   }
 
@@ -49,8 +49,8 @@ object RichObject {
    * @tparam T
    * @return
    */
-  def >>[T](f: () => T): Boolean = {
-    val ret = >(f)
+  def >>>[T](f: () => T): Boolean = {
+    val ret = >>(f)
     // 默认打印日志
     if (ret.isError()) POUtils.warn("invoke function exception", ret.err)
     ret.isError()
