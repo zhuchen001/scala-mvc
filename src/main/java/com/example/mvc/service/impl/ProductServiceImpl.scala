@@ -39,7 +39,7 @@ class ProductServiceImpl extends ProductService {
 
     logger.info("save product:{}", domain)
 
-    // 走内部切面
+    // 走内部切面 test d
     AopContext.currentProxy().asInstanceOf[ProductServiceImpl].saveProductInner(domain)
 
     domain.sendMQ("testtopic")
