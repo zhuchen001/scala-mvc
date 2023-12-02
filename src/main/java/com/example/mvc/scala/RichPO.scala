@@ -3,12 +3,13 @@ package com.example.mvc.scala
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper
 import com.baomidou.mybatisplus.core.mapper.BaseMapper
 import org.apache.kafka.clients.producer.ProducerRecord
+import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.kafka.support.SendResult
 import org.springframework.util.concurrent.{ListenableFuture, ListenableFutureCallback}
 
 /**
- * 给Object扩展常用方法（https://blog.csdn.net/xxyy888/article/details/5797734）
+ * 给Object扩展常用方法（https://blog.csdn.net/xxyy888/article/details/5797734）(隐式类模式)
  */
 object RichPO {
   /**
@@ -151,6 +152,40 @@ object RichPO {
       new SendResult[String, T](newRecord, ret.getRecordMetadata)
     }
 
+
+  }
+
+  implicit class TupleExtensions(tuple: (String, Object))(implicit redisTemplate: RedisTemplate[String, String]) {
+
+    /**
+     * 根据条件查询，支持PO的等于查询，也支持QueryWrapper的·自定义条件查询
+     *
+     * @param qwInput
+     * @return
+     */
+    def cache: Unit = {
+      if (tuple._2.isInstanceOf[String])
+        redisTemplate.opsForValue().set(tuple._1, tuple._2.toString)
+      else
+        redisTemplate.opsForValue().set(tuple._1, JSONTools.toJson(tuple._2))
+    }
+  }
+
+  implicit class StringExtensions(key: String)(implicit redisTemplate: RedisTemplate[String, String]) {
+
+    /**
+     * 根据条件查询，支持PO的等于查询，也支持QueryWrapper的·自定义条件查询
+     *
+     * @param qwInput
+     * @return
+     */
+    def getFromCache: String = {
+      redisTemplate.opsForValue().get(key)
+    }
+
+    def getFromCache[T](claz: Class[T]): T = {
+      JSONTools.parser(redisTemplate.opsForValue().get(key), claz)
+    }
 
   }
 }

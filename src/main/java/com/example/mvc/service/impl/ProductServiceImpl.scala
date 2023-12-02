@@ -8,6 +8,7 @@ import com.example.mvc.service.ProductService
 import com.example.mvc.utils.QueryWrapperBuild
 import org.slf4j.LoggerFactory
 import org.springframework.aop.framework.AopContext
+import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -29,6 +30,9 @@ class ProductServiceImpl extends ProductService {
   @Resource
   implicit val kafkaTemplate: KafkaTemplate[String, String] = null
 
+  @Resource
+  implicit val redisTemplate: RedisTemplate[String, String] = null
+
   /**
    * 保存 Product
    *
@@ -38,7 +42,7 @@ class ProductServiceImpl extends ProductService {
   override def saveProduct(domain: ProductBean): Boolean = {
     require(domain != null, "domain must not null")
 
-    logger.info("save product:{}, is not null:{}", domain,  (domain?).isDefined)
+    logger.info("save product:{}, is not null:{}", domain, (domain ?).isDefined)
 
 
     // 走内部切面 test d sd hello
@@ -48,6 +52,10 @@ class ProductServiceImpl extends ProductService {
     if (>>>(() => excep(domain))) {
       // TODO ·比如短路返回一些信息
     }
+
+    ("k1", domain).cache
+
+    printf("kv form redis:%s", "k1".getFromCache(classOf[ProductBean]))
 
     domain.sendMQ("testtopic")
 

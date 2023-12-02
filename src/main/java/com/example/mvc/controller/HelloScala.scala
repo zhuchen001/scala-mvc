@@ -2,13 +2,14 @@ package com.example.mvc.controller
 
 import com.example.mvc.dao.{ProductMapper, ProductMapper2, SubMapper}
 import com.example.mvc.demo.UserDomain
-import com.example.mvc.domain.{ProductBean, ProductBean2, SubBean}
+import com.example.mvc.domain.{ProductBean, ProductBean2, ProductDTO, SubBean}
 import com.example.mvc.scala.RichPO._
 import com.example.mvc.service.ProductService
 import org.springframework.web.bind.annotation.{RequestMapping, RestController}
 
 import javax.annotation.Resource
 import scala.collection.JavaConverters._
+import com.example.mvc.utils.ProductUtil._
 
 @RestController
 class HelloScala {
@@ -34,7 +35,7 @@ class HelloScala {
   @RequestMapping(Array("/index3"))
   def insert: Any = {
 
-    val domain: ProductBean = createDomain
+    val domain = createDTO
 
     //productService.saveProduct(null)
 
@@ -54,8 +55,8 @@ class HelloScala {
     productService.findById(ret.getId)
   }
 
-  private def createDomain = {
-    val domain = ProductBean.builder().id("123").name("zhuzhu").ptype(2).stafferId("45435").build()
+  private def createDTO(): ProductDTO = {
+    val domain = ProductDTO.builder().id("123").name("zhuzhu").ptype(2).stafferId("45435").build()
 
     val subBean1 = SubBean.builder().name("sub1").build()
     val subBean2 = SubBean.builder().name("sub2").build()
