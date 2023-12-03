@@ -105,6 +105,10 @@ object RichPO {
       mapper.selectList(null).asScala.toList
     }
 
+    def delete: Int = {
+      mapper.delete(qwInput)
+    }
+
   }
 
   /**

@@ -66,7 +66,7 @@ class ProductServiceImpl extends ProductService {
   override def deleteProduct(id: String): Boolean = {
     require(id != null, "id must not null")
 
-    val domain: ProductBean = productMapper.selectById(id)
+    val domain: ProductBean = ProductBean.builder().id(id).build().findById
 
     if (domain == null) return true
 
@@ -74,13 +74,13 @@ class ProductServiceImpl extends ProductService {
     domain --
 
     //删除子表
-    subMapper.delete(QueryWrapperBuild.create(classOf[SubBean]).eq(SubBean.Fields.parentId, id).build())
+    QueryWrapperBuild.create(classOf[SubBean]).eq(SubBean.Fields.parentId, id).build().delete
 
     true
   }
 
   override def findById(id: String): ProductBean = {
-    val domain: ProductBean = productMapper.selectById(id)
+    val domain: ProductBean = ProductBean.builder().id(id).build().findById
 
     if (domain == null) return null
 
