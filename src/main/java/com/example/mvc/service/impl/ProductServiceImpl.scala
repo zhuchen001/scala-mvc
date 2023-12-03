@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 import javax.annotation.Resource
+import scala.None.isDefined
 import scala.collection.JavaConverters._
 
 @Service
@@ -40,17 +41,15 @@ class ProductServiceImpl extends ProductService {
    * @return
    */
   override def saveProduct(domain: ProductBean): Boolean = {
-    require(domain != null, "domain must not null")
+    require((domain ?) isDefined, "domain must not null")
 
-    logger.info("save product:{}, is not null:{}", domain, (domain ?).isDefined)
+    logger.info("save product:{}", domain)
 
 
-    // 走内部切面 test d sd hello
-    AopContext.currentProxy().asInstanceOf[ProductServiceImpl].saveProductInner(domain)
-
-    // 如果执行异常
-    if (>>>(() => excep(domain))) {
+    // 走内部切面,捕获异常
+    if (>>>(AopContext.currentProxy().asInstanceOf[ProductServiceImpl].saveProductInner(domain))) {
       // TODO ·比如短路返回一些信息
+      println("xxxxxxx")
     }
 
     ("k1", domain).cache
@@ -62,10 +61,6 @@ class ProductServiceImpl extends ProductService {
     true
   }
 
-  private def excep(domain: ProductBean): ProductBean = {
-    //throw new RuntimeException("xxxxxx")
-    domain
-  }
 
   @Transactional
   override def deleteProduct(id: String): Boolean = {
@@ -107,7 +102,9 @@ class ProductServiceImpl extends ProductService {
     if (domain.getSubBeanList == null) return
 
     // sub保存
-    domain.getSubBeanList.asScala.foreach(_.setParentId(domain.getId) ++)
-
+    domain.getSubBeanList.asScala
+      .filter(_.getName.toOption.isDefined)
+      .map(_.setParentId(domain.getId))
+      .foreach(_ ++)
   }
 }

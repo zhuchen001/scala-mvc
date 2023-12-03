@@ -158,16 +158,19 @@ object RichPO {
   implicit class TupleExtensions(tuple: (String, Object))(implicit redisTemplate: RedisTemplate[String, String]) {
 
     /**
-     * 根据条件查询，支持PO的等于查询，也支持QueryWrapper的·自定义条件查询
+     * 缓存数据到redis中
      *
      * @param qwInput
      * @return
      */
     def cache: Unit = {
-      if (tuple._2.isInstanceOf[String])
-        redisTemplate.opsForValue().set(tuple._1, tuple._2.toString)
-      else
-        redisTemplate.opsForValue().set(tuple._1, JSONTools.toJson(tuple._2))
+      // 偏函数
+      val pf: PartialFunction[Object, Unit] = {
+        case x if x.isInstanceOf[String] => redisTemplate.opsForValue().set(tuple._1, tuple._2.toString)
+        case _ => redisTemplate.opsForValue().set(tuple._1, JSONTools.toJson(tuple._2))
+      }
+
+      pf(tuple._2)
     }
   }
 
@@ -183,6 +186,12 @@ object RichPO {
       redisTemplate.opsForValue().get(key)
     }
 
+    /**
+     * 从缓存中根据key读取数据
+     * @param claz 直接把JSON转换为目标对象
+     * @tparam T
+     * @return
+     */
     def getFromCache[T](claz: Class[T]): T = {
       JSONTools.parser(redisTemplate.opsForValue().get(key), claz)
     }

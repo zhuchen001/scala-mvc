@@ -35,14 +35,12 @@ class HelloScala {
   @RequestMapping(Array("/index3"))
   def insert: Any = {
 
-    val domain = createDTO
+    val dto = createDTO
 
-    //productService.saveProduct(null)
+    // 隐式转换 dto转bean
+    productService.saveProduct(dto)
 
-    productService.saveProduct(domain)
-
-    productService.deleteProduct(domain.getId)
-
+    productService.deleteProduct(dto.getId)
 
     val domain2 = new ProductBean2().setId("123").setName("zhuzhu2").setType(2).setStafferId("45435")
 
