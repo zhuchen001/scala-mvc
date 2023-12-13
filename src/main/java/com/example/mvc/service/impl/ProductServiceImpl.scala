@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 import javax.annotation.Resource
-import scala.None.isDefined
 import scala.collection.JavaConverters._
 
 @Service
@@ -49,16 +48,37 @@ class ProductServiceImpl extends ProductService {
     // 走内部切面,捕获异常
     if (>>>(AopContext.currentProxy().asInstanceOf[ProductServiceImpl].saveProductInner(domain))) {
       // TODO ·比如短路返回一些信息
-      println("xxxxxxx")
+      logger.warn("save product fail:{}", domain)
+      return false
     }
 
-    ("k1", domain).cache
+    // 缓存数据到redis
+    (domain.getId, domain).cache
 
-    printf("kv form redis:%s", "k1".getFromCache(classOf[ProductBean]))
+    // printf("kv form redis:%s", "k1".getFromCache(classOf[ProductBean]))
 
+    // 发送领域事件
     domain.sendMQ("testtopic")
 
     true
+  }
+
+  /**
+   * 切面必须是public方法
+   */
+  @Transactional
+  def saveProductInner(domain: ProductBean): Unit = {
+    // 保存主表
+    domain +>
+
+    if (domain.getSubBeanList == null) return
+
+
+    // sub保存
+    domain.getSubBeanList.asScala
+      .filter(_.getName.toOption.isDefined)
+      .map(_.setParentId(domain.getId))
+      .foreach(_ ++)
   }
 
 
@@ -91,20 +111,5 @@ class ProductServiceImpl extends ProductService {
     domain
   }
 
-  /**
-   * 切面必须是public方法
-   */
-  @Transactional
-  def saveProductInner(domain: ProductBean): Unit = {
-    // 保存主表
-    domain +>
 
-    if (domain.getSubBeanList == null) return
-
-    // sub保存
-    domain.getSubBeanList.asScala
-      .filter(_.getName.toOption.isDefined)
-      .map(_.setParentId(domain.getId))
-      .foreach(_ ++)
-  }
 }
